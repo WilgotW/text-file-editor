@@ -4,6 +4,7 @@
 #include <conio.h>
 
 int readExistingFiles();
+int setup();
 int createFile();
 int editFile();
 int printoutFiles();
@@ -58,11 +59,30 @@ int readExistingFiles(){
             (*filesCreatedPointer)++;
         }
         fclose(recordFile);
-    }else{
-        //record file doesn't exist, create file
-        FILE *recordFilePointer;
-        recordFilePointer = fopen("file_record.txt", "w");
+    }else {
+        setup();
     }
+    return 0;
+}
+
+int setup(){
+    //record file doesn't exist, create file
+    FILE *recordFilePointer;
+    recordFilePointer = fopen("file_record.txt", "w");
+
+    //check if files folder exists
+    const char *folderPath = "files";
+    if (!CreateDirectory(folderPath, NULL)) {
+        if (GetLastError() == ERROR_ALREADY_EXISTS) {
+            printf("Folder already exists.\n");
+        } else {
+            printf("Failed to create folder.\n");
+        }
+    } else {
+        printf("Folder created successfully.\n");
+    }
+
+    return 0;
 }
 int createFile() {
     char input[100];
