@@ -58,6 +58,10 @@ int readExistingFiles(){
             (*filesCreatedPointer)++;
         }
         fclose(recordFile);
+    }else{
+        //record file doesn't exist, create file
+        FILE *recordFilePointer;
+        recordFilePointer = fopen("file_record.txt", "w");
     }
 }
 int createFile() {
