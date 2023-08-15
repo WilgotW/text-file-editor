@@ -130,35 +130,43 @@ int createFile() {
     return 0;
 }
 
-int editFile(){
-    //print out files:
+int editFile() {
+    // Print out files:
     printStorage();
-    printf("what file do you want to edit \n");
+    printf("What file do you want to edit?\n");
 
     char input[100];
     scanf("%99[^\n]", input);
     getchar();
-    char *fileName = combineStrings(input, ".txt");
 
-    FILE *openFile = fopen(fileName, "a");
-    if(openFile == NULL){
+    char *path = combineStrings("files/", input);
+    char *fileName = combineStrings(path, ".txt");
+
+    printf(fileName);
+
+    FILE *openFile = fopen(fileName, "w");
+    if (openFile == NULL) {
         perror("Error opening file");
         return 1;
     }
 
-    printf("%s", combineStrings("\n opened file: ", fileName));
-    printf("\n enter new text: ");
-    const char textInput[250];
+    printf("%s\n", combineStrings("Opened file: ", fileName));
+    printf("Enter new text: ");
 
-    scanf("%249[^\n]", textInput);
+    char textInput[250];
+    scanf(" %249[^\n]", textInput);
     getchar();
 
     fputs(textInput, openFile);
-    printf("\n edited file \n ");
-    pressToContinue();
+    printf("Edited file\n");
+    fclose(openFile);
+
+    free(path);
+    free(fileName);
 
     return 0;
 }
+
 
 int readFile(){
     return 0;
