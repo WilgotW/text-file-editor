@@ -12,6 +12,9 @@ int printoutFiles();
 int readFile();
 int pressToContinue();
 int printStorage();
+int setTextColor();
+int resetTextColor();
+
 struct FileData
 {
     char name[100];
@@ -22,13 +25,15 @@ struct FileData files[100];
 int filesCreated;
 int *filesCreatedPointer = &filesCreated;
 
-int main() {
 
+
+int main() {
+    resetTextColor();
     readExistingFiles();
 
     while (TRUE)
     {
-        printf("what do you want to do?");
+        printf("\n what do you want to do?");
         printf("\n 1. create new file. \n 2. edit existing file \n 3. read existing file. \n 4. exit program \n");
 
         int select;
@@ -49,6 +54,7 @@ int main() {
                 exit(0);
                 break;
         }
+        printf("\n");
     }
     return 0;
 }
@@ -132,7 +138,12 @@ int createFile() {
 
 int editFile() {
     // Print out files:
-    printStorage();
+    int sp = printStorage();
+    if(sp){
+        printf("no files found \n");
+        pressToContinue();
+        return 0;
+    }
     printf("What file do you want to edit?\n");
 
     char input[100];
@@ -142,7 +153,6 @@ int editFile() {
     char *path = combineStrings("files/", input);
     char *fileName = combineStrings(path, ".txt");
 
-    printf(fileName);
 
     FILE *openFile = fopen(fileName, "w");
     if (openFile == NULL) {
@@ -150,7 +160,7 @@ int editFile() {
         return 1;
     }
 
-    printf("%s\n", combineStrings("Opened file: ", fileName));
+    printf("%s\n", combineStrings("\n Opened file: ", fileName));
     printf("Enter new text: ");
 
     char textInput[250];
@@ -169,23 +179,69 @@ int editFile() {
 
 
 int readFile(){
+    int sp = printStorage();
+    if(sp){
+        printf("no files found \n");
+        pressToContinue();
+        return 0;
+    }
+    printf("what file do you want to read? \n");
+
+    char input[100];
+    scanf("%99[^\n]", input);
+    getchar();
+
+    char *path = combineStrings("files/", input);
+    char *fileName = combineStrings(path, ".txt");
+
+    FILE *openFile = fopen(fileName, "r");
+
+    if(openFile == NULL){
+        perror("invalid file name");
+        return 1;
+    }
+
+    printf("content: \n");
+    setTextColor();
+    char ch;
+    while ((ch = fgetc(openFile)) != EOF){
+        putchar(ch);
+    }
+    resetTextColor();
+
+    pressToContinue();
+    fclose(openFile);
+
     return 0;
 }
 
 int printStorage(){
+    if(filesCreated < 1){
+        return 1;
+    }
     printf("files in storage: \n");
     for(int i = 0; i < filesCreated; i++){
         printf("*  -");
         printf(files[i].name);
         printf("\n");
     }
+    return 0;
 }
 
 int pressToContinue(){
-    printf("press any key to continue...");
+    printf("\npress any key to continue... \n \n");
     getch();
 
     return 0;
 }
 
-
+int setTextColor(){
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+    return 0;
+}
+int resetTextColor(){
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+    return 0;
+}
